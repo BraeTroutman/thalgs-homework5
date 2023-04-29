@@ -1,4 +1,4 @@
-function OptimalSubsolution(W::Int64, w::Vector{Int64}, v::Vector{Int64})
+function OptimalSubsolution(W::Int64, w::AbstractVector{Int64}, v::AbstractVector{Int64})
     Rows = fill(0, (2, W+1))
 
     for i = 1:length(v)
@@ -11,13 +11,13 @@ function OptimalSubsolution(W::Int64, w::Vector{Int64}, v::Vector{Int64})
                 Rows[2,c+1] = Rows[1,c+1]
             end
         end
-        Rows[1,:] = copy(Rows[2,:])
+        Rows[1,:] .= @view Rows[2,:]
     end
 
     return Rows[2,:]
 end
 
-function Knapsack(W::Int64, i::Vector{Int64}, w::Vector{Int64}, v::Vector{Int64})
+function Knapsack(W::Int64, i::AbstractVector{Int64}, w::AbstractVector{Int64}, v::AbstractVector{Int64})
     N = length(i)
     if N == 1
         if w[1] <= W
@@ -27,12 +27,12 @@ function Knapsack(W::Int64, i::Vector{Int64}, w::Vector{Int64}, v::Vector{Int64}
         end
     end
 
-	il = i[1:div(end,2)]
-	ir = i[div(end,2)+1:end]
-	wl = w[1:div(end,2)]
-	wr = w[div(end,2)+1:end]
-	vl = v[1:div(end,2)]
-	vr = v[div(end,2)+1:end]
+	il = @view i[1:div(end,2)]
+	ir = @view i[div(end,2)+1:end]
+	wl = @view w[1:div(end,2)]
+	wr = @view w[div(end,2)+1:end]
+	vl = @view v[1:div(end,2)]
+	vr = @view v[div(end,2)+1:end]
 
 	x1 = OptimalSubsolution(W, wl, vl) # O(nW)
 	x2 = OptimalSubsolution(W, wr, vr) # O(nW)
